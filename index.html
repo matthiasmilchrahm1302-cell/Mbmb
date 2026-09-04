@@ -3,98 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mbmb</title>
+
+    <title>KM Poster</title>
 
     <style>
         body {
-            margin: 0;
+            background-color: black;
+            color: white;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
-        header {
-            background-color: #333;
-            color: white;
-            padding: 15px;
             text-align: center;
+            padding-top: 100px;
         }
 
-        nav {
-            background-color: #555;
-            padding: 10px;
-            text-align: center;
+        h1 {
+            font-size: 50px;
         }
 
-        nav a {
-            color: white;
-            margin: 0 10px;
-            text-decoration: none;
-            font-weight: bold;
+        button {
+            font-size: 25px;
+            padding: 15px 30px;
+            margin: 15px;
+            cursor: pointer;
         }
 
-        nav a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
+        #antwort {
+            font-size: 25px;
+            margin-top: 40px;
             padding: 20px;
-        }
-
-        .card {
-            background: white;
-            padding: 20px;
-            margin: 10px 0;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        footer {
-            background-color: #333;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
         }
     </style>
 </head>
 
 <body>
 
-<header>
-    <h1>Willkommen bei Mbmb</h1>
-    <p>Was wollen Sie?</p>
-</header>
+    <h1>KM POSTER</h1>
 
-<nav>
-    <a href="#">Start</a>
-    <a href="#">Über uns</a>
-    <a href="#kontakt">Kontakt</a>
-</nav>
+    <h2>Willst du ein Poster?</h2>
 
-<div class="container">
+    <button onclick="ja()">JA</button>
+    <button onclick="nein()">NEIN</button>
 
-    <div class="card">
-        <h2>Produktliste</h2>
-        <p>Zeitdieb,T-shirts</p>
-    </div>
+    <div id="antwort"></div>
 
-    <div class="card">
-        <h2>Aktion</h2>
-        <p>Nach fünf Käufen einen Gutschein – wir freuen uns!</p>
-    </div>
+    <script>
+        function ja() {
+            document.getElementById("antwort").innerHTML =
+                "Danke! 🎉<br><br>" +
+                "Melde dich unter:<br>" +
+                "<b>matthias.milchrahm1302@gmail.com</b><br><br>" +
+                "Gib den Code <b>123defghoi</b> in deiner E-Mail ein und erhalte 50 % Rabatt!";
+        }
 
-    <div class="card" id="kontakt">
-        <h2>Kontakt</h2>
-        <p>Email: <a href="mailto:matthias.milchrahm1302@gmail.com">matthias.milchrahm@gmail.com</a></p>
-    </div>
-
-</div>
-
-<footer>
-    <p>© 2026 Mbmb</p>
-</footer>
+        function nein() {
+            document.getElementById("antwort").innerHTML =
+                "Schade! 😢<br><br>" +
+                "Falls du es dir anders überlegst, melde dich unter:<br>" +
+                "<b>matthias.milchrahm1302@gmail.com</b>";
+        }
+    </script>
 
 </body>
 </html>
