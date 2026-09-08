@@ -2,66 +2,129 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>KM Poster</title>
+    <title>KM AI – Online KI</title>
 
     <style>
         body {
-            background-color: black;
-            color: white;
             font-family: Arial, sans-serif;
-            text-align: center;
-            padding-top: 100px;
+            background: #f2f2f2;
+            margin: 0;
+            padding: 0;
         }
 
-        h1 {
-            font-size: 50px;
+        #chatbox {
+            width: 450px;
+            margin: 40px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
         }
 
-        button {
-            font-size: 25px;
-            padding: 15px 30px;
-            margin: 15px;
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+
+        .msg {
+            margin: 10px 0;
+            padding: 8px 12px;
+            border-radius: 8px;
+            max-width: 80%;
+        }
+
+        .user {
+            background: #d0e8ff;
+            align-self: flex-end;
+        }
+
+        .ai {
+            background: #e8ffd8;
+        }
+
+        #inputbox {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #eingabe {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        #sendbtn {
+            padding: 10px 20px;
+            border: none;
+            background: #0077cc;
+            color: white;
+            border-radius: 8px;
             cursor: pointer;
         }
 
-        #antwort {
-            font-size: 25px;
-            margin-top: 40px;
-            padding: 20px;
+        #sendbtn:hover {
+            background: #005fa3;
         }
     </style>
 </head>
 
 <body>
 
-    <h1>KM POSTER</h1>
+<div id="chatbox">
+    <h2>KM AI – Chat</h2>
 
-    <h2>Willst du ein Poster?</h2>
+    <div id="messages"></div>
 
-    <button onclick="ja()">JA</button>
-    <button onclick="nein()">NEIN</button>
+    <div id="inputbox">
+        <input id="eingabe" type="text" placeholder="Frage eingeben...">
+        <button id="sendbtn" onclick="senden()">Senden</button>
+    </div>
+</div>
 
-    <div id="antwort"></div>
+<script>
 
-    <script>
-        function ja() {
-            document.getElementById("antwort").innerHTML =
-                "Danke! 🎉<br><br>" +
-                "Melde dich unter:<br>" +
-                "<b>matthias.milchrahm1302@gmail.com</b><br><br>" +
-                "Gib den Code <b>123defghoi</b> in deiner E-Mail ein und erhalte 50 % Rabatt!";
-        }
+// HIER DEINE KI-URL EINTRAGEN (ngrok, Server, etc.)
+const KI_URL = "https://DEINE-KI-URL/frage";
 
-        function nein() {
-            document.getElementById("antwort").innerHTML =
-                "Schade! 😢<br><br>" +
-                "Falls du es dir anders überlegst, melde dich unter:<br>" +
-                "<b>matthias.milchrahm1302@gmail.com</b>";
-        }
-    </script>
+function senden() {
+    let frage = document.getElementById("eingabe").value.trim();
+    if (!frage) return;
+
+    addMessage("Du: " + frage, "user");
+
+    fetch(KI_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ frage: frage })
+    })
+    .then(res => res.json())
+    .then(data => {
+        addMessage("KM AI: " + data.antwort, "ai");
+    })
+    .catch(err => {
+        addMessage("Fehler: KI nicht erreichbar.", "ai");
+    });
+
+    document.getElementById("eingabe").value = "";
+}
+
+function addMessage(text, type) {
+    let box = document.getElementById("messages");
+    let div = document.createElement("div");
+    div.className = "msg " + type;
+    div.textContent = text;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+}
+</script>
 
 </body>
 </html>
+
 
