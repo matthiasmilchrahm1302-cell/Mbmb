@@ -2,126 +2,222 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <title>KM AI – Online KI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>KM AI</title>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
             margin: 0;
-            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: white;
         }
 
-        #chatbox {
-            width: 450px;
-            margin: 40px auto;
-            background: white;
+        header {
+            background: #000;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            text-align: center;
+            border-bottom: 2px solid white;
         }
 
-        #messages {
+        header h1 {
+            margin: 0;
+            font-size: 35px;
+        }
+
+        .chat {
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+            background: #1c1c1c;
+            border: 2px solid white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: #000;
+            padding: 15px;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        #nachrichten {
             height: 400px;
             overflow-y: auto;
-            border: 1px solid #ddd;
-            padding: 10px;
-            border-radius: 8px;
-            background: #fafafa;
+            padding: 15px;
         }
 
-        .msg {
+        .nachricht {
             margin: 10px 0;
-            padding: 8px 12px;
-            border-radius: 8px;
-            max-width: 80%;
+            padding: 12px;
+            border-radius: 10px;
         }
 
-        .user {
-            background: #d0e8ff;
-            align-self: flex-end;
+        .du {
+            background: #333;
+            text-align: right;
         }
 
-        .ai {
-            background: #e8ffd8;
+        .ki {
+            background: #222;
+            border: 1px solid #555;
         }
 
-        #inputbox {
-            margin-top: 15px;
+        .eingabe {
             display: flex;
-            gap: 10px;
+            border-top: 2px solid #555;
         }
 
-        #eingabe {
+        #frage {
             flex: 1;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-
-        #sendbtn {
-            padding: 10px 20px;
+            padding: 15px;
+            font-size: 16px;
             border: none;
-            background: #0077cc;
+            outline: none;
+            background: #333;
             color: white;
-            border-radius: 8px;
-            cursor: pointer;
         }
 
-        #sendbtn:hover {
-            background: #005fa3;
+        button {
+            padding: 15px 25px;
+            background: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ccc;
         }
     </style>
 </head>
 
 <body>
 
-<div id="chatbox">
-    <h2>KM AI – Chat</h2>
+<header>
+    <h1>KM AI</h1>
+    <p>Meine eigene künstliche Intelligenz</p>
+</header>
 
-    <div id="messages"></div>
+<div class="chat">
 
-    <div id="inputbox">
-        <input id="eingabe" type="text" placeholder="Frage eingeben...">
-        <button id="sendbtn" onclick="senden()">Senden</button>
+    <div class="chat-header">
+        KM AI Chat
     </div>
+
+    <div id="nachrichten">
+
+        <div class="nachricht ki">
+            KM AI: Hallo! Wie kann ich dir helfen?
+        </div>
+
+    </div>
+
+    <div class="eingabe">
+
+        <input
+            id="frage"
+            type="text"
+            placeholder="Schreibe eine Frage..."
+            onkeydown="enterTaste(event)"
+        >
+
+        <button onclick="senden()">
+            Senden
+        </button>
+
+    </div>
+
 </div>
+
 
 <script>
 
-// HIER DEINE KI-URL EINTRAGEN (ngrok, Server, etc.)
-const KI_URL = "https://DEINE-KI-URL/frage";
+async function senden() {
 
-function senden() {
-    let frage = document.getElementById("eingabe").value.trim();
-    if (!frage) return;
+    const feld = document.getElementById("frage");
+    const frage = feld.value.trim();
 
-    addMessage("Du: " + frage, "user");
+    if (frage === "") {
+        return;
+    }
 
-    fetch(KI_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ frage: frage })
-    })
-    .then(res => res.json())
-    .then(data => {
-        addMessage("KM AI: " + data.antwort, "ai");
-    })
-    .catch(err => {
-        addMessage("Fehler: KI nicht erreichbar.", "ai");
-    });
+    const nachrichten =
+        document.getElementById("nachrichten");
 
-    document.getElementById("eingabe").value = "";
+    // Frage anzeigen
+    nachrichten.innerHTML += `
+        <div class="nachricht du">
+            Du: ${frage}
+        </div>
+    `;
+
+    feld.value = "";
+
+    // Ladeanzeige
+    nachrichten.innerHTML += `
+        <div class="nachricht ki" id="laden">
+            KM AI: Ich denke nach...
+        </div>
+    `;
+
+    nachrichten.scrollTop =
+        nachrichten.scrollHeight;
+
+    try {
+
+        const antwort = await fetch(
+            "http://127.0.0.1:5000/chat",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    frage: frage
+                })
+            }
+        );
+
+        const daten = await antwort.json();
+
+        document.getElementById("laden").remove();
+
+        nachrichten.innerHTML += `
+            <div class="nachricht ki">
+                KM AI: ${daten.antwort}
+            </div>
+        `;
+
+    } catch (fehler) {
+
+        document.getElementById("laden").remove();
+
+        nachrichten.innerHTML += `
+            <div class="nachricht ki">
+                KM AI: Der Python-Server ist gerade nicht erreichbar.
+            </div>
+        `;
+    }
+
+    nachrichten.scrollTop =
+        nachrichten.scrollHeight;
 }
 
-function addMessage(text, type) {
-    let box = document.getElementById("messages");
-    let div = document.createElement("div");
-    div.className = "msg " + type;
-    div.textContent = text;
-    box.appendChild(div);
-    box.scrollTop = box.scrollHeight;
+
+function enterTaste(event) {
+
+    if (event.key === "Enter") {
+        senden();
+    }
+
 }
+
 </script>
 
 </body>
