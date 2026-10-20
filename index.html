@@ -1,119 +1,66 @@
 
-<style>
-#namensFenster {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: #080d18;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-}
+<div class="card">
+  <h2>Einheitliche Feldtheorie kaufen</h2>
 
-.namensKarte {
-  width: 100%;
-  max-width: 420px;
-  padding: 30px;
-  background: #111a2b;
-  border: 1px solid #293752;
-  border-radius: 16px;
-  color: #e9f0ff;
-  font-family: Arial, sans-serif;
-}
+  <label for="kundenname">Dein Name</label>
+  <input id="kundenname" type="text" placeholder="Namen eingeben">
 
-.namensKarte h1 {
-  font-size: 25px;
-}
+  <button class="action primary" onclick="verkaeuferBenachrichtigen()">
+    Verkäufer benachrichtigen
+  </button>
 
-.namensKarte p {
-  color: #92a2bd;
-  line-height: 1.5;
-}
-
-.namensKarte input {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 13px;
-  margin: 12px 0;
-  background: #080d18;
-  color: white;
-  border: 1px solid #293752;
-  border-radius: 8px;
-}
-
-.namensKarte button {
-  width: 100%;
-  padding: 13px;
-  background: #2365bc;
-  color: white;
-  border: 0;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-}
-</style>
-
-<div id="namensFenster">
-  <div class="namensKarte">
-    <h1>Willkommen im FieldLab</h1>
-    <p>Wie heißt du? Wähle deinen Namen, um das Labor zu betreten.</p>
-
-    <form id="namenFormular">
-      <input
-        id="besucherName"
-        type="text"
-        placeholder="Dein Name"
-        maxlength="60"
-        required
-        autocomplete="nickname"
-      >
-      <button type="submit">Labor betreten →</button>
-    </form>
+  <div id="kaufAnfrage" style="display:none; margin-top:20px;">
+    <h3>Deine Kaufanfrage</h3>
+    <textarea id="emailText" readonly></textarea>
+    <button class="action primary" onclick="emailOeffnen()">
+      E-Mail öffnen
+    </button>
+    <button class="action" onclick="textKopieren()">
+      Text kopieren
+    </button>
+    <p id="statusText"></p>
   </div>
 </div>
 
 <script>
-const namensFenster = document.getElementById("namensFenster");
-const namenFeld = document.getElementById("besucherName");
-
-// Namen während dieses Website-Besuchs merken
-let kundenName = "";
-
-document.getElementById("namenFormular").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  kundenName = namenFeld.value.trim();
-
-  if (!kundenName) {
-    alert("Bitte gib deinen Namen ein.");
-    return;
-  }
-
-  namensFenster.style.display = "none";
-});
-
-// Diese Funktion beim Kauf-Button verwenden
 function verkaeuferBenachrichtigen() {
-  if (!kundenName) {
-    alert("Bitte wähle zuerst deinen Namen aus.");
-    namensFenster.style.display = "flex";
+  const name = document.getElementById("kundenname").value.trim();
+
+  if (!name) {
+    alert("Bitte gib zuerst deinen Namen ein!");
     return;
   }
 
-  const empfaenger = "matthias.milchrahm1302@gmail.com";
+  document.getElementById("emailText").value =
+    name + " möchte die Einheitliche Feldtheorie kaufen.";
+
+  document.getElementById("kaufAnfrage").style.display = "block";
+  document.getElementById("statusText").textContent =
+    "Kaufanfrage erstellt! Du kannst jetzt die E-Mail öffnen.";
+}
+
+function emailOeffnen() {
+  const email = "matthias.milchrahm1302@gmail.com";
   const betreff = "Kaufanfrage: Einheitliche Feldtheorie";
+  const nachricht = document.getElementById("emailText").value;
 
-  const nachricht =
-    kundenName +
-    " möchte die Einheitliche Feldtheorie kaufen.\n\n" +
-    "Bitte antworte mir auf diese E-Mail.";
-
-  const link = "mailto:" + empfaenger +
+  window.location.href =
+    "mailto:" + email +
     "?subject=" + encodeURIComponent(betreff) +
     "&body=" + encodeURIComponent(nachricht);
+}
 
-  window.location.href = link;
+async function textKopieren() {
+  const text = document.getElementById("emailText").value;
+
+  try {
+    await navigator.clipboard.writeText(text);
+    document.getElementById("statusText").textContent =
+      "Text kopiert! Du kannst ihn in eine E-Mail einfügen.";
+  } catch (e) {
+    document.getElementById("emailText").select();
+    document.getElementById("statusText").textContent =
+      "Text markiert. Drücke Strg+C zum Kopieren.";
+  }
 }
 </script>
-</body>
